@@ -21,6 +21,7 @@ console.log(process.env);
 
 //Rutas
 app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/login', require('./routes/auth'));
 
 
 app.listen( process.env.PORT, () => {
