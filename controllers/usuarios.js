@@ -1,6 +1,7 @@
 const { response, json } = require('express');
 const bcryptjs = require('bcryptjs');
-const Usuario = require("../models/usuarios")
+const Usuario = require("../models/usuarios");
+const { generarJWT } = require('../helpers/jwt');
 
 const getUsuarios = async(req, res) => {
 
@@ -36,10 +37,14 @@ const crearUsuarios = async(req, res = response) => {
     
         //Guardar usuario
         await usuario.save();
+
+                //Generar JWT
+                const token = await generarJWT( usuario.id )
     
         res.json({
             ok: true,
-            usuario: usuario
+            usuario: usuario,
+            token
         });
     } catch (error) {
         res.status(500).json({
@@ -85,11 +90,11 @@ const actualizarUsuario = async (req, res = response) => {
 
         // const usuarioActilizado = await Usuario.findByIdAndUpdate( uid, campos );
         // Para que Mongoose envié directamente el campo que actualicé, de lo contrario envía primero como estaba antes
-        const usuarioActilizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true } );
+        const usuarioActualizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true } );
 
         res.json({
             ok: true,
-            usuario: usuarioActilizado
+            usuario: usuarioActualizado
         })
         
     } catch (error) {
@@ -102,35 +107,35 @@ const actualizarUsuario = async (req, res = response) => {
 
 }
 
-    const borrarUsuario = async (req, res = response) => {
+const borrarUsuario = async (req, res = response) => {
 
-        const uid = req.params.id;
+    const uid = req.params.id;
 
-        try {
+    try {
 
-            const usuarioDB = await Usuario.findById( uid );
+        const usuarioDB = await Usuario.findById( uid );
 
-            if( !usuarioDB ){
-                return res.status(404).json({
-                    ok: false,
-                    msg: 'No existe un usuario por ese id'
-                });
-            }
-
-            await Usuario.findByIdAndDelete( uid );
-
-            res.json({
-                ok: true,
-                msg: 'Usuario eliminado'
-            })
-        } catch (error) {
-            res.status(500).json({
+        if( !usuarioDB ){
+            return res.status(404).json({
                 ok: false,
-                msg: 'Hable con el administrador'
-            })
+                msg: 'No existe un usuario por ese id'
+            });
         }
 
+        await Usuario.findByIdAndDelete( uid );
+
+        res.json({
+            ok: true,
+            msg: 'Usuario eliminado'
+        })
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
     }
+
+}
 
 
 module.exports = {
