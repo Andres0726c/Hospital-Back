@@ -4,7 +4,7 @@ const validarJWT = (req, res, next) => {
 
     //Leer el token
     const token = req.header('x-token');
-    console.log(token);
+    // console.log(token);
 
     if( !token ){
         return res.status(401).json({
@@ -16,7 +16,7 @@ const validarJWT = (req, res, next) => {
     try {
 
         const { uid } = jwt.verify( token, process.env.JWT_SECRET );
-        console.log(uid);
+        // console.log(uid);
 
         req.uid = uid;
         
