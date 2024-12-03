@@ -7,7 +7,41 @@
 </head>
 <body>
 
-    <h1>Hola mundo</h1>
+    <h1>Google</h1>
+
+    <div id="buttonDiv"></div>
+
+    <script src="https://accounts.google.com/gsi/client" async></script>
+
+    <script>
+
+      var url = 'http://localhost:3000/api/login/google'
+
+        function handleCredentialResponse(response) {
+          //console.log("Encoded JWT ID token: " + response.credential);
+
+          fetch( url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: response.credential })
+          } )
+            .then( resp => resp.json() )
+            .then( data => console.log('Nuestro server', data) )
+            .catch( console.log )
+
+        }
+        window.onload = function () {
+          google.accounts.id.initialize({
+            client_id: '736891246120-9lh8qe82u9kbn08ro19i6bdtn7tnmvbu.apps.googleusercontent.com',
+            callback: handleCredentialResponse
+          });
+          google.accounts.id.renderButton(
+            document.getElementById("buttonDiv"),
+            { theme: "outline", size: "large" }  // customization attributes
+          );
+          google.accounts.id.prompt(); // also display the One Tap dialog
+        }
+      </script>
     
 </body>
 </html>
